@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Initialization vector generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 8px 16px;
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    button {
+      font-family: sans-serif;
+    }
+
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      gap: 8px;
+    }
+
+    label {
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    @media screen and (max-width: 425px) {
+      .actions {
+        flex-direction: column;
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <form id="form" action="javascript:void(0);">
+    <label>
+      <span>Generate initialization vector</span>
+      <input id="iv" type="text" readonly>
+    </label>
+    <div class="actions">
+      <button type="button" id="copy">Copy to clipboard</button>
+      <button type="submit">Generate</button>
+    </div>
+  </form>
+  <script>
+    /**
+     * @param {Uint8Array} buffer
+     * @returns {string}
+    */
+    function toHexString(buffer) {
+      return buffer.reduce((result, byte) => {
+        return result + byte.toString(16).padStart(2, '0')
+      }, '')
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+    }
+  </script>
+  <script>
+    /** @type {HTMLInputElement} */
+    const input = document.getElementById('iv');
+
+    /** @type {HTMLFormElement} */
+    const form = document.getElementById('form');
+    form.addEventListener('submit', () => {
+      const buffer = new Uint8Array(32);
+      const random = crypto.getRandomValues(buffer)
+
+      input.value = toHexString(random)
+      copyToClipboard(input.value)
+    })
+
+    /** @type {HTMLButtonElement} */
+    const copyBtn = document.getElementById('copy');
+    copyBtn.addEventListener('click', () => {
+      copyToClipboard(input.value)
+    })
+  </script>
+</body>
+
+</html>
